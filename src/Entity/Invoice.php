@@ -35,7 +35,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          }
  *      },
  *      attributes={
- *      "pagination_enabled"=true,
  *      "pagination_items_per_page"=20,
  *      "order"={"amount":"desc"}
  *      },
