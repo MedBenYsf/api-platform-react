@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import ReactDOM from 'react-dom';
-
+import AuthContext from './contexts/AuthContext';
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -12,26 +12,41 @@ import ReactDOM from 'react-dom';
 import '../css/app.css';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
-import { HashRouter, Switch, Route } from 'react-router-dom';
+import { HashRouter, Switch, Route, withRouter, Redirect } from 'react-router-dom';
 import CustomersPage from './pages/CustomersPage';
 import CustomersPageWithPagination from './pages/CustomersPageWithPagination';
 import InvoicesPage from './pages/InvoicesPage';
+import LoginPage from './pages/LoginPage';
+import AuthentificationService from './services/AuthentificationService';
+import PrivateRoute from './components/PrivatedRoute';
 
 // Need jQuery? Install it with "yarn add jquery", then uncomment to import it.
 // import $ from 'jquery';
 
+AuthentificationService.setUp();
+
+const NavbarWithRouter = withRouter(Navbar);
+
 const App = () => {
+	const [ isAuthenticated, setIsAuthenticated ] = useState(AuthentificationService.isLogged());
+	const contextValue = {
+		isAuthenticated,
+		setIsAuthenticated
+	};
 	return (
-		<HashRouter>
-			<Navbar />
-			<main className="container pt-5">
-				<Switch>
-					<Route path="/" exact component={HomePage} />
-					<Route path="/customers" exact component={CustomersPage} />
-					<Route path="/invoices" exact component={InvoicesPage} />
-				</Switch>
-			</main>
-		</HashRouter>
+		<AuthContext.Provider value={contextValue}>
+			<HashRouter>
+				<NavbarWithRouter />
+				<main className="container pt-5">
+					<Switch>
+						<Route path="/" exact component={HomePage} />
+						<Route path="/login" exact component={LoginPage} />
+						<PrivateRoute path="/customers" component={CustomersPage} />
+						<PrivateRoute path="/invoices" component={InvoicesPage} />
+					</Switch>
+				</main>
+			</HashRouter>
+		</AuthContext.Provider>
 	);
 };
 const rootElement = document.querySelector('#app');
