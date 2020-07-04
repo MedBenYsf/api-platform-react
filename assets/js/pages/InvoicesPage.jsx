@@ -2,6 +2,7 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import Pagination from '../components/Pagination';
 import InvoicesService from '../services/InvoicesService';
+import { Link } from 'react-router-dom';
 
 const InvoicesPage = () => {
 	const [ invoices, setInvoices ] = useState([]);
@@ -12,14 +13,14 @@ const InvoicesPage = () => {
 
 	const STATUS_CLASSES = {
 		PAID: 'success',
-		SENTED: 'primary',
+		SENT: 'primary',
 		CANCELLED: 'danger'
-	}
+	};
 	const STATUS_LABELS = {
 		PAID: 'Payée',
-		SENTED: 'Envoyée',
+		SENT: 'Envoyée',
 		CANCELLED: 'Annulée'
-	}
+	};
 
 	const getInvoices = async () => {
 		try {
@@ -36,28 +37,27 @@ const InvoicesPage = () => {
 
 	const handleChangePage = (page) => {
 		setCurrentPage(page);
-	}
+	};
 
 	const handleDelete = async (id) => {
-		const originalInvoices = [...invoices];
+		const originalInvoices = [ ...invoices ];
 
-		setInvoices(invoices.filter(invoice => invoice.id !== id));
+		setInvoices(invoices.filter((invoice) => invoice.id !== id));
 		try {
 			await InvoicesService.deleteInvoice(id);
-
-		} catch(error) {
+		} catch (error) {
 			console.log(error);
 			setInvoices(originalInvoices);
 		}
-	}
+	};
 
 	const filteredInvoices = invoices.filter(
 		(i) =>
 			i.customer.firstName.toLowerCase().includes(search.toLowerCase()) ||
 			i.customer.lastName.toLowerCase().includes(search.toLowerCase()) ||
-			i.amount.toString().toLowerCase().includes(search.toLowerCase()) 
-			// a voir pourquoi ça marche pas
-			//STATUS_LABELS[i.status].toLowerCase().includes(search.toLowerCase())
+			i.amount.toString().toLowerCase().includes(search.toLowerCase())
+		// a voir pourquoi ça marche pas
+		//STATUS_LABELS[i.status].toLowerCase().includes(search.toLowerCase())
 	);
 
 	const paginatedInvoices = Pagination.getData(currentPage, itemsPerPage, filteredInvoices);
@@ -72,7 +72,12 @@ const InvoicesPage = () => {
 
 	return (
 		<div>
-			<h1>Liste des factures</h1>
+			<div className="mb-3 d-flex justify-content-between align-items-center">
+				<h1>Liste des factures</h1>
+				<Link to="/invoices/new" className="btn btn-primary">
+					Ajouter une facture
+				</Link>
+			</div>
 			<div className="form-group">
 				<input
 					type="text"
@@ -105,22 +110,28 @@ const InvoicesPage = () => {
 							<td className="text-center">{formatDate(invoice.sentAt)}</td>
 							<td className="text-center">{invoice.amount.toLocaleString()} $</td>
 							<td className="text-center">
-								<span className={"badge badge-" + STATUS_CLASSES[invoice.status]}>{STATUS_LABELS[invoice.status]}</span>
+								<span className={'badge badge-' + STATUS_CLASSES[invoice.status]}>
+									{STATUS_LABELS[invoice.status]}
+								</span>
 							</td>
 							<td>
-								<button className="btn btn-sm btn-primary mr-1">Editer</button>
-								<button className="btn btn-sm btn-danger" onClick={() => handleDelete(invoice.id)}>Supprimer</button>
+								<Link to={'/invoices/' + invoice.id} className="btn btn-sm btn-primary mr-1">
+									Editer
+								</Link>
+								<button className="btn btn-sm btn-danger" onClick={() => handleDelete(invoice.id)}>
+									Supprimer
+								</button>
 							</td>
 						</tr>
 					))}
 				</tbody>
 			</table>
 			<Pagination
-					currentPage={currentPage}
-					itemsPerPage={itemsPerPage}
-					size={filteredInvoices.length}
-					onChangePagination={handleChangePage}
-				/>
+				currentPage={currentPage}
+				itemsPerPage={itemsPerPage}
+				size={filteredInvoices.length}
+				onChangePagination={handleChangePage}
+			/>
 		</div>
 	);
 };

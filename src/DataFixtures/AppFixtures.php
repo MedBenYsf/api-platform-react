@@ -32,28 +32,28 @@ class AppFixtures extends Fixture
             $user = new User();
             $hash = $this->encoder->encodePassword($user, 'password');
             $user->setFirstName($faker->firstName())
-                 ->setLastName($faker->lastName())
-                 ->setEmail($faker->email)
-                 ->setPassword($hash);
+                ->setLastName($faker->lastName())
+                ->setEmail($faker->email)
+                ->setPassword($hash);
             $manager->persist($user);
 
             for ($i = 0; $i < mt_rand(5, 20); $i++) {
                 $customer = new Customer();
                 $customer->setFirstName($faker->firstName)
-                         ->setLastName($faker->lastName)
-                         ->setEmail($faker->email)
-                         ->setCompany($faker->company)
-                         ->setUser($user);
-                    $manager->persist($customer);
-    
+                    ->setLastName($faker->lastName)
+                    ->setEmail($faker->email)
+                    ->setCompany($faker->company)
+                    ->setUser($user);
+                $manager->persist($customer);
+
                 for ($j = 0; $j < mt_rand(3, 10); $j++) {
                     $invoice = new Invoice();
                     $invoice->setAmount($faker->randomFloat(2, 200, 4000))
-                            ->setSentAt($faker->dateTimeBetween('-6 months'))
-                            ->setStatus($faker->randomElement(['SENTED', 'PAID', 'CANCELLED']))
-                            ->setCustomer($customer)
-                            ->setChrono($chrono);
-                        $chrono++;
+                        ->setSentAt($faker->dateTimeBetween('-6 months'))
+                        ->setStatus($faker->randomElement(['SENT', 'PAID', 'CANCELLED']))
+                        ->setCustomer($customer)
+                        ->setChrono($chrono);
+                    $chrono++;
                     $manager->persist($invoice);
                 }
             }

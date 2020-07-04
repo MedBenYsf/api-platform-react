@@ -6,7 +6,7 @@ const PrivateRoute = (props) => {
 	const { path, component } = props;
 	const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
 
-	return isAuthenticated ? <Route path={path} exact component={component} /> : <Redirect to="/login" />;
+	return isAuthenticated ? <Route exact path={path} exact component={component} /> : <Redirect to="/login" />;
 };
 
 export default PrivateRoute;

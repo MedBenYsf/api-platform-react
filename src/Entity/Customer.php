@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "groups"={"customers_read"}
  *      },
  *      collectionOperations={"GET"={"path"="/clients"},"POST"},
- *      itemOperations={"GET"={"path"="/clients/{id}"}, "PUT", "DELETE"},
+ *      itemOperations={"GET", "PUT", "DELETE"},
  *      subresourceOperations={
  *          "invoices_get_subresource"={"path"="/customers/{id}/invoices"}
  *      }
@@ -43,7 +43,7 @@ class Customer
      * @ORM\Column(type="string", length=255)
      * @Groups({"customers_read", "invoices_read"})
      * @Assert\NotBlank(message="Le prénom est obligatoire")
-     * @Assert\Length(min=3, minMessage="Le prénom doit faire entre 3 et 255 caractères", max=255)
+     * @Assert\Length(min=3, minMessage="Le prénom doit faire entre 3 et 255 caractères", max=255, allowEmptyString = true)
      */
     private $firstName;
 
@@ -51,7 +51,7 @@ class Customer
      * @ORM\Column(type="string", length=255)
      * @Groups({"customers_read", "invoices_read"})
      * @Assert\NotBlank(message="Le nom est obligatoire")
-     * @Assert\Length(min=3, minMessage="Lenom doit faire entre 3 et 255 caractères", max=255)
+     * @Assert\Length(min=3, minMessage="Le nom doit faire entre 3 et 255 caractères", max=255, allowEmptyString = true)
      */
     private $lastName;
 
@@ -95,7 +95,7 @@ class Customer
      */
     public function getTotalAmount(): float
     {
-        return array_reduce($this->invoices->toArray(), function($total, $invoice) {
+        return array_reduce($this->invoices->toArray(), function ($total, $invoice) {
             return $total + $invoice->getAmount();
         }, 0);
     }
@@ -107,9 +107,9 @@ class Customer
      */
     public function getUnpaidAmount(): float
     {
-        return array_reduce($this->invoices->toArray(), function($total, $invoice) {
+        return array_reduce($this->invoices->toArray(), function ($total, $invoice) {
             return $total + ($invoice->getStatus() === 'PAID' || $invoice->getStatus() === 'CANCELLED')
-             ? 0 : $invoice->getAmount();
+                ? 0 : $invoice->getAmount();
         }, 0);
     }
 
