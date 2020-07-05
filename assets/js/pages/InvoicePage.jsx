@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import CustomersService from '../services/CustomersService';
 import Axios from 'axios';
 import InvoicesService from '../services/InvoicesService';
+import { toast } from 'react-toastify';
+import FormLoader from '../components/loaders/FormLoader';
 const InvoicePage = ({ history, match }) => {
 	const [ invoice, setInvoice ] = useState({
 		amount: '',
@@ -21,6 +23,7 @@ const InvoicePage = ({ history, match }) => {
 
 	const [ customers, setCustomers ] = useState([]);
 	const [ editing, setEditing ] = useState(false);
+	const[loading, setLoading] = useState(true);
 
 	const handleChange = (event) => {
 		const { name, value } = event.currentTarget;
@@ -31,10 +34,10 @@ const InvoicePage = ({ history, match }) => {
 		try {
 			const data = await CustomersService.getAll();
 			setCustomers(data['hydra:member']);
-			console.log(invoice.customer);
-			if (!invoice.customer && !id) setInvoice({ ...invoice, customer: data['hydra:member'][0].id });
+			setLoading(false)
+			if (!invoice.customer && id === 'new') setInvoice({ ...invoice, customer: data['hydra:member'][0].id });
 		} catch (error) {
-			console.log(error.response);
+			toast.error('Une erreur est survenue lors de chargements des clients !');
 		}
 	};
 
@@ -43,8 +46,9 @@ const InvoicePage = ({ history, match }) => {
 			const data = await InvoicesService.get(id);
 			const { amount, status, customer } = data;
 			setInvoice({ amount, status, customer: customer.id });
+			setLoading(false);
 		} catch (error) {
-			//TODO notification error
+			toast.error('Une erreur est survenue lors de chargement de la facture demandée !');
 			history.replace('/invoices');
 		}
 	};
@@ -65,14 +69,13 @@ const InvoicePage = ({ history, match }) => {
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
-		console.log('invoice ==>', invoice);
 		try {
 			if (editing) {
 				await InvoicesService.update(id, invoice);
-				//TODO: flash notification success
+				toast.success('La facture a bien été modifiée avec suuccès !');
 			} else {
 				await InvoicesService.create(invoice);
-				//TODO: flash notification success
+				toast.success('La facture a bien été crée avec suuccès !');
 				history.replace('/invoices');
 			}
 		} catch ({ response }) {
@@ -84,14 +87,15 @@ const InvoicePage = ({ history, match }) => {
 				});
 				setErrors(apiError);
 			}
-			//TODO: flash notification error
+			toast.error('Le formulaire contient des erreurs !');
 		}
 	};
 
 	return (
 		<div>
 			<h1>Création d'une facture</h1>
-			<form onSubmit={handleSubmit}>
+			{loading && <FormLoader />}
+			{!loading && <form onSubmit={handleSubmit}>
 				<Field
 					name="amount"
 					label="Montant"
@@ -131,7 +135,7 @@ const InvoicePage = ({ history, match }) => {
 						Retour aux factures
 					</Link>
 				</div>
-			</form>
+			</form> }
 		</div>
 	);
 };

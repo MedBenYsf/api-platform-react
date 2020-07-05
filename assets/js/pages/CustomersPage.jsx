@@ -2,22 +2,25 @@ import React, { useEffect, useState } from 'react';
 import Pagination from '../components/Pagination';
 import CustomersService from '../services/CustomersService';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import TableLoader from '../components/loaders/TableLoader';
 
 const CustomersPage = () => {
 	const [ customers, setCustomers ] = useState([]);
 	const [ currentPage, setCurrentPage ] = useState(1);
 	const [ search, setSearch ] = useState('');
+	const [loading, setLoading] = useState(true);
 
 	const getAllCustomers = async () => {
 		try {
 			const data = await CustomersService.getAll();
 			setCustomers(data['hydra:member']);
+			setLoading(false);
 		} catch (error) {
-			console.log(error);
+			toast.error('Une erreur est survenue lors de chargement des clients !');
 		}
 	};
 	useEffect(() => {
-		//CustomersService.getAll().then((data) => setCustomers(data['hydra:member']));
 		getAllCustomers();
 	}, []);
 
@@ -25,9 +28,10 @@ const CustomersPage = () => {
 		try {
 			await CustomersService.deleteCustomer(id);
 			setCustomers(customers.filter((customer) => customer.id !== id));
+			toast.success('Le client a bien été supprimé avec succès !');
 		} catch (error) {
 			setCustomers(customers);
-			console.log(error);
+			toast.error('Une erreur est survenue lors de la suppression de client !');
 		}
 	};
 
@@ -80,12 +84,12 @@ const CustomersPage = () => {
 						<th />
 					</tr>
 				</thead>
-				<tbody>
+				{!loading && <tbody>
 					{paginatedCustomers.map((customer) => (
 						<tr key={customer.id}>
 							<td>{customer.id}</td>
 							<td>
-								{customer.firstName} {customer.lastName}
+								<Link to={'/customers/' + customer.id}>{customer.firstName} {customer.lastName}</Link> 
 							</td>
 							<td>{customer.email}</td>
 							<td>{customer.company}</td>
@@ -102,8 +106,9 @@ const CustomersPage = () => {
 							</td>
 						</tr>
 					))}
-				</tbody>
+				</tbody> }
 			</table>
+			{loading && <TableLoader /> }
 			{filteredCustomers.length > 0 && (
 				<Pagination
 					currentPage={currentPage}

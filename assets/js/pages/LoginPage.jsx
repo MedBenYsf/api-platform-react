@@ -3,6 +3,7 @@ import React, { useState, useContext } from 'react';
 import AuthentificationService from '../services/AuthentificationService';
 import AuthContext from '../contexts/AuthContext';
 import Field from '../components/forms/Field';
+import { toast } from 'react-toastify';
 
 const LoginPage = (props) => {
 	const {history} = props;
@@ -26,10 +27,11 @@ const LoginPage = (props) => {
 			localStorage.setItem('authToken', token);
 			Axios.defaults.headers['Authorization'] = 'Bearer ' + token;
 			setIsAuthenticated(true);
+			toast.success('Vous etes désormais connecté !');
 			history.push('/customers');
 		} catch (error) {
-			console.log(error);
 			setError('Aucun compte ne possede pas cette adresse email ou bien les informations ne correspondent pas !');
+			toast.error('Le formulaire contient des erreurs !');
 		}
 	};
 

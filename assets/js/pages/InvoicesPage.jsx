@@ -3,11 +3,14 @@ import React, { useEffect, useState } from 'react';
 import Pagination from '../components/Pagination';
 import InvoicesService from '../services/InvoicesService';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import TableLoader from '../components/loaders/TableLoader';
 
 const InvoicesPage = () => {
 	const [ invoices, setInvoices ] = useState([]);
 	const [ currentPage, setCurrentPage ] = useState(1);
 	const [ search, setSearch ] = useState('');
+	const [loading, setLoading] = useState(true);
 
 	const itemsPerPage = 10;
 
@@ -26,8 +29,9 @@ const InvoicesPage = () => {
 		try {
 			const data = await InvoicesService.getAll();
 			setInvoices(data['hydra:member']);
+			setLoading(false);
 		} catch (error) {
-			console.log(error);
+			toast.error('une erreur est survenue lors de chargement des factures !');
 		}
 	};
 
@@ -41,12 +45,12 @@ const InvoicesPage = () => {
 
 	const handleDelete = async (id) => {
 		const originalInvoices = [ ...invoices ];
-
 		setInvoices(invoices.filter((invoice) => invoice.id !== id));
 		try {
 			await InvoicesService.deleteInvoice(id);
+			toast.success('La facture a bien été supprimée avec suuccès !');
 		} catch (error) {
-			console.log(error);
+			toast.success('Une erreur est survenue lors de la suppression de la facture !');
 			setInvoices(originalInvoices);
 		}
 	};
@@ -98,14 +102,14 @@ const InvoicesPage = () => {
 						<th />
 					</tr>
 				</thead>
-				<tbody>
+				{!loading && <tbody>
 					{paginatedInvoices.map((invoice) => (
 						<tr key={invoice.id}>
 							<td>{invoice.chrono}</td>
 							<td>
-								<a href="#">
+								<Link to={'/customers/' + invoice.customer.id}>
 									{invoice.customer.firstName} {invoice.customer.lastName}
-								</a>
+								</Link>
 							</td>
 							<td className="text-center">{formatDate(invoice.sentAt)}</td>
 							<td className="text-center">{invoice.amount.toLocaleString()} $</td>
@@ -124,8 +128,9 @@ const InvoicesPage = () => {
 							</td>
 						</tr>
 					))}
-				</tbody>
+				</tbody> }
 			</table>
+			{loading && <TableLoader />}
 			<Pagination
 				currentPage={currentPage}
 				itemsPerPage={itemsPerPage}

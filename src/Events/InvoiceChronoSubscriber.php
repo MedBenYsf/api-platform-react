@@ -40,6 +40,5 @@ class InvoiceChronoSubscriber implements EventSubscriberInterface
                 $invoice->setSentAt(new \DateTime());
             }
         }
-
     }
 }

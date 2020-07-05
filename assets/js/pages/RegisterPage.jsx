@@ -3,6 +3,7 @@ import Field from '../components/forms/Field';
 import { Link } from 'react-router-dom';
 import Axios from 'axios';
 import UsersService from '../services/UsersService';
+import { toast } from 'react-toastify';
 
 const RegisterPage = ({ history }) => {
 	const [ user, setUser ] = useState({
@@ -35,7 +36,7 @@ const RegisterPage = ({ history }) => {
 		try {
 			await UsersService.register(user);
 			setErrors({});
-			//TODO flash success
+            toast.success('Votre compte a bien été crée avec succès !');
 			history.replace('/login');
 		} catch (error) {
 			const { violations } = error.response.data;
@@ -44,8 +45,8 @@ const RegisterPage = ({ history }) => {
 					apiError[propertyPath] = message;
 				});
 				setErrors(apiError);
-			}
-			//TODO flash error
+            }
+            toast.error('Votre formulaire contient des erreurs !');
 		}
 	};
 

@@ -24,15 +24,14 @@ class InvoiceRepository extends ServiceEntityRepository
     public function getNextChrono(User $user)
     {
         return $this->createQueryBuilder('i')
-                    ->select('i.chrono')
-                    ->join('i.customer', 'c')
-                    ->where('c.user = :user')
-                    ->setParameter('user', $user)
-                    ->OrderBy('i.chrono', 'desc')
-                    ->setMaxResults(1)
-                    ->getQuery()
-                    ->getSingleScalarResult() + 1;
-
+            ->select('i.chrono')
+            ->join('i.customer', 'c')
+            ->where('c.user = :user')
+            ->setParameter('user', $user)
+            ->OrderBy('i.chrono', 'desc')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getSingleScalarResult() + 1;
     }
 
     // /**
