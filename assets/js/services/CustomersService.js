@@ -1,23 +1,24 @@
 import Axios from 'axios';
+import { API_URL } from '../config';
 
 const getAll = () => {
-	return Axios.get('http://127.0.0.1:8000/api/clients').then((response) => response.data);
+	return Axios.get(API_URL + 'clients').then((response) => response.data);
 };
 
 const deleteCustomer = (id) => {
-	return Axios.delete(`http://127.0.0.1:8000/api/customers/${id}`);
+	return Axios.delete(`${API_URL}customers/${id}`);
 };
 
 const get = (id) => {
-	return Axios.get(`http://127.0.0.1:8000/api/customers/${id}`).then((response) => response.data);
+	return Axios.get(`${API_URL}customers/${id}`).then((response) => response.data);
 };
 
 const update = (id, customer) => {
-	return Axios.put(`http://localhost:8000/api/customers/${id}`, customer);
+	return Axios.put(`${API_URL}customers/${id}`, customer);
 };
 
 const create = (customer) => {
-	return Axios.post('http://localhost:8000/api/customers', customer);
+	return Axios.post(`${API_URL}customers`, customer);
 };
 
 export default {

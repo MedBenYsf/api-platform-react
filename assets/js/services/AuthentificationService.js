@@ -1,14 +1,13 @@
 import Axios from 'axios';
 import jwtDecode from 'jwt-decode';
+import { API_URL } from '../config';
 
 const authenticate = (credentials) => {
-	return Axios.post('http://localhost:8000/api/login_check', credentials)
-		.then((response) => response.data.token)
-		.then((token) => {
-			localStorage.setItem('authToken', token);
-			setAxios(token);
-			return token;
-		});
+	return Axios.post(`${API_URL}login_check`, credentials).then((response) => response.data.token).then((token) => {
+		localStorage.setItem('authToken', token);
+		setAxios(token);
+		return token;
+	});
 };
 
 const logout = () => {

@@ -1,26 +1,27 @@
 import Axios from 'axios';
+import { API_URL } from '../config';
 
 const getAll = () => {
-	return Axios.get('http://127.0.0.1:8000/api/invoices').then((response) => response.data);
+	return Axios.get(`${API_URL}invoices`).then((response) => response.data);
 };
 
 const get = (id) => {
-	return Axios.get(`http://localhost:8000/api/invoices/${id}`).then((response) => response.data);
+	return Axios.get(`${API_URL}invoices/${id}`).then((response) => response.data);
 };
 
 const deleteInvoice = (id) => {
-	return Axios.delete(`http://127.0.0.1:8000/api/invoices/${id}`);
+	return Axios.delete(`${API_URL}invoices/${id}`);
 };
 
 const update = (id, invoice) => {
-	return Axios.put(`http://localhost:8000/api/invoices/${id}`, {
+	return Axios.put(`${API_URL}invoices/${id}`, {
 		...invoice,
 		customer: `/api/customers/${invoice.customer}`
 	});
 };
 
 const create = (invoice) => {
-	return Axios.post(`http://localhost:8000/api/invoices`, {
+	return Axios.post(`${API_URL}invoices`, {
 		...invoice,
 		customer: `/api/customers/${invoice.customer}`
 	});
